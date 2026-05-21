@@ -25,6 +25,11 @@ resource "aws_vpc" "digitrans_vpc" {
   tags = {
     Name = "digitrans-vpc"
   }
+
+  # Éviter les erreurs si le VPC existe déjà
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_subnet" "subnet_az1" {
@@ -92,6 +97,11 @@ resource "aws_iam_role" "eks_cluster_role" {
       }
     }]
   })
+
+  # Ignorer les changements de tags si le rôle existe déjà
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
@@ -112,6 +122,11 @@ resource "aws_iam_role" "eks_nodes_role" {
       }
     }]
   })
+
+  # Ignorer les changements de tags si le rôle existe déjà
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "eks_worker_node_policy" {
@@ -141,6 +156,11 @@ resource "aws_eks_cluster" "eks" {
   }
 
   depends_on = [aws_iam_role_policy_attachment.eks_cluster_policy]
+
+  # Ignorer les changements de tags si le cluster existe déjà
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_eks_node_group" "nodes" {
@@ -162,4 +182,9 @@ resource "aws_eks_node_group" "nodes" {
     aws_iam_role_policy_attachment.eks_cni_policy,
     aws_iam_role_policy_attachment.ecr_read_only,
   ]
+
+  # Ignorer les changements de tags si le node group existe déjà
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
