@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: digitrans-api-deployment
+  labels:
+    app: digitrans-api
+spec:
+  replicas: 3 # Maintient 3 instances actives pour parer à toute panne de conteneur
+  selector:
+    matchLabels:
+      app: digitrans-api
+  template:
+    metadata:
+      labels:
+        app: digitrans-api
+    spec:
+      containers:
+      - name: digitrans-api-container
+        # Image officielle poussée avec succès sur ton ECR AWS
+        image: 458186068659.dkr.ecr.us-east-1.amazonaws.com/digitrans-api:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        # Sonde d'état (Liveness/Readiness) pour autodestruction/recréation si l'API freeze
+        livenessProbe:
+          httpGet:
+            path: /api-docs
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
