@@ -1,6 +1,6 @@
 - name: Terraform Init & Apply
   run: |
-    cd terrafom-kam
+    cd terraform-kam
     terraform init
     terraform apply -auto-approve
   env:
